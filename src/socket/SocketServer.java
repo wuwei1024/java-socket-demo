@@ -15,6 +15,7 @@ public class SocketServer {
     //所有的在线客户端socket
     private static final List<Socket> list = Collections.synchronizedList(new LinkedList<>());
     private static final Logger logger = Logger.getLogger(SocketServer.class.getName());
+
     /**
      * 获取所有的在线客户端socket
      *
@@ -39,6 +40,13 @@ public class SocketServer {
                 System.err.println(ip + " 用户上线了 , 当前在线用户为: " + list.size() + "人 !");
                 //启动新的线程，监听客户端的在线状态
                 new Thread(() -> listenClientStatus(s)).start();
+                for (Socket socket : list) {
+                    //获取客户端字符输出流，发送数据到客户端
+                    PrintWriter pw = new PrintWriter(socket.getOutputStream());
+                    pw.println("服务器说: 新的客户端上线了!");
+                    pw.flush();
+                    //pw.close();
+                }
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
